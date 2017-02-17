@@ -16,7 +16,7 @@ releases:
 stemcells:
 - alias: thrusty
   name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
-#  version: 3363
+  version: latest
 
 instance_groups:
 - name: apache-server
