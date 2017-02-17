@@ -1,0 +1,42 @@
+name: apache2-bosh-release
+director_uuid: 1e6edf66-ba40-4ed3-a31a-128f8d6c791d
+
+properties:
+  aws:
+    access_key_id: (( vault "secret/aws/aws_access_key_id:value" ))
+    secret_access_key: (( vault "secret/aws/aws_secret_access_key_id:value" ))
+    default_key_name: tk-bosh
+    default_security_groups: [tk-sg-bs-vps]
+    region: us-east-1
+
+releases:
+- name: apache2-bosh-release
+  version: latest
+
+stemcells:
+- alias: thrusty
+  name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+  version: 3363
+
+instance_groups:
+- name: apache-server
+  instances: 1
+  # replace with a VM type from your BOSH Director's cloud config
+  vm_type: default
+  stemcell: thrusty
+  # replace with a disk type from your BOSH Director's cloud config
+  persistent_disk_type: default
+  azs: [tk-zone2-bs-vpc]
+  networks:
+  - name: concourse
+    static_ips: 10.12.1.14
+  jobs:
+  - name: webapp
+    release: apache2-bosh-release
+
+update:
+  canaries: 1
+  max_in_flight: 1
+  serial: false
+  canary_watch_time: 1000-60000
+  update_watch_time: 1000-60000
